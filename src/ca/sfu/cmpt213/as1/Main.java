@@ -1,8 +1,7 @@
 package ca.sfu.cmpt213.as1;
 
 /**
- * Provides the main functionality of a bike registry with options
- * to list, add, remove, change, and dump objects the bikes
+ * Provides the main functionality to manage a bike registry
  * @author April Nguyen
  *  @version 1.0
  */
@@ -20,7 +19,13 @@ public class Main {
                     }
                     break;
                 case "2":
-                    Bike.addNewBike();
+                    try {
+                        Bike.addNewBike();
+                    }
+                    catch(Exception e) {
+                        System.out.println("Error: " + e.getMessage());
+                        System.out.println("Unable to add new bike.");
+                    }
                     break;
                 case "3":
                     try {
@@ -46,6 +51,7 @@ public class Main {
                 case "6":
                     System.out.println("BYE!");
                     exit = true;
+                    break;
                 default:
                     System.out.println("Invalid option. Try again.");
                     break;

@@ -1,11 +1,12 @@
 package ca.sfu.cmpt213.as1;
 
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
 /**
- * Represent a bike registry.
+ * Represents a bike registry.
  * This class provides methods to manipulate the bike registry
  * @author April Nguyen
  * @version 1.0
@@ -16,7 +17,7 @@ public class Bike {
     private String type;
     private String serial;
     private String brake;
-    private String wheel;
+    private int wheel;
 
     private static int idCounter = 1;
     private static List<Bike> bikes = new ArrayList<>();
@@ -35,7 +36,7 @@ public class Bike {
     public void setBrake(String brake){
         this.brake = brake;
     }
-    public void setWheel(String wheel){
+    public void setWheel(int wheel){
         this.wheel = wheel;
     }
 
@@ -99,7 +100,7 @@ public class Bike {
         displayTitle("List of Bikes:");
         System.out.printf("%-3s %-16s %-10s %-11s %-7s %-9s\n", "ID", "Owner,", "Type,","Serial,","Brake","WheelSize");
         for (Bike b : bikes) {
-            System.out.printf("%-3s %-16s %-10s %-11s %-7s %-9s\n", b.id + ",", b.owner + ",", b.type + ",", b.serial + ",", b.brake + ",", b.wheel);
+            System.out.printf("%-3s %-16s %-10s %-11s %-7s %-9d\n", b.id + ",", b.owner + ",", b.type + ",", b.serial + ",", b.brake + ",", b.wheel);
         }
     }
 
@@ -112,23 +113,33 @@ public class Bike {
         return null;
     }
 
-    public static void addNewBike() {
+    public static void addNewBike() throws Exception {
         Scanner scanner = new Scanner(System.in).useDelimiter("\n");
         String owner;
         String type;
         String serial;
-        String brake;
-        String wheel;
+        String brake ;
+        int wheel;
         System.out.printf("%-30s", "Enter Bike owner name:");
         owner = scanner.next();
         System.out.printf("%-30s", "Enter Bike type:");
         type = scanner.next();
+        while (!(type.equals("Mountain") || type.equals("Road") || type.equals("Touring") ||
+                type.equals("Commuter") || type.equals("Cruiser") || type.equals("Folding"))) {
+            System.out.println("Invalid bike type. Try again.");
+            type = scanner.next();
+        }
         System.out.printf("%-30s", "Enter Bike's serial number:");
         serial = scanner.next();
         System.out.printf("%-30s", "Enter Bike's brake type:");
         brake = scanner.next();
-        System.out.printf("%-30s", "Enter Bike's wheel type:");
-        wheel = scanner.next();
+        while (!(brake.equals("Rim") || brake.equals("Disc") || brake.equals("Drum"))) {
+            System.out.println("Invalid brake type. Try again.");
+            brake = scanner.next();
+        }
+        System.out.printf("%-30s", "Enter Bike's wheel size:");
+        wheel = Integer.parseInt(scanner.next());
+
         Bike newBike = new Bike(owner,type,serial,brake,wheel);
         bikes.add(newBike);
     }
@@ -154,7 +165,7 @@ public class Bike {
         }
     }
 
-    public static void alterBike() {
+    public static void alterBike() throws Exception {
         Scanner scanner = new Scanner(System.in).useDelimiter("\n");
         int id;
         String attribute;
@@ -177,24 +188,47 @@ public class Bike {
             System.out.println("New Value");
             System.out.print("> ");
             newValue = scanner.next();
-            switch (attribute) {
-                case "Owner":
-                    b.owner = newValue;
-                    break;
-                case "Type":
-                    b.type = newValue;
-                    break;
-                case "Serial":
-                    b.serial = newValue;
-                    break;
-                case "Brake":
-                    b.brake = newValue;
-                    break;
-                case "Wheel Size":
-                    b.wheel = newValue;
-                    break;
-                default:
-                    System.out.println("Invalid Attribute");
+            boolean valid = false;
+            while (!valid) {
+                switch (attribute) {
+                    case "Owner":
+                        b.owner = newValue;
+                        valid = true;
+                        break;
+                    case "Type":
+                        while (!(newValue.equals("Mountain") || newValue.equals("Road") || newValue.equals("Touring") ||
+                                newValue.equals("Commuter") || newValue.equals("Cruiser") || newValue.equals("Folding"))) {
+                            System.out.println("Invalid bike type. Try again.");
+                            newValue = scanner.next();
+                        }
+                        b.type = newValue;
+                        valid = true;
+                        break;
+                    case "Serial":
+                        b.serial = newValue;
+                        valid = true;
+                        break;
+                    case "Brake":
+                        while (!(newValue.equals("Rim") || newValue.equals("Disc") || newValue.equals("Drum"))) {
+                            System.out.println("Invalid brake type. Try again.");
+                            newValue = scanner.next();
+                        }
+                        b.brake = newValue;
+                        valid = true;
+                        break;
+                    case "Wheel Size":
+                        b.wheel = Integer.parseInt(newValue);
+                        valid = true;
+                        break;
+                    default:
+                        System.out.println("Invalid Attribute");
+                        System.out.println("Which Attribute?");
+                        System.out.print("> ");
+                        attribute = scanner.next();
+                        System.out.println("New Value");
+                        System.out.print("> ");
+                        newValue = scanner.next();
+                }
             }
             System.out.println("Saved!");
         }
@@ -221,7 +255,7 @@ public class Bike {
         }
     }
 
-    public Bike(String owner, String type, String serial, String brake, String wheel) {
+    public Bike(String owner, String type, String serial, String brake, int wheel) {
         this.id = idCounter;
         idCounter++;
         this.owner = owner;
